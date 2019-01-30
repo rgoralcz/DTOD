@@ -20,8 +20,8 @@ from tkinter import Tk, Text, TOP, BOTH, RIGHT, X, N, LEFT
 from tkinter.ttk import Frame, Button, Style, Label, Entry
 
 
-def close_window(tempobj):
-    tempobj.destroy()
+def close_window():
+    root.destroy()
 
 class Example(Frame):
 
@@ -67,8 +67,7 @@ class Example(Frame):
         frame4.pack(fill=X, expand=False, anchor=N)
         lbl4 = Label(frame4, text="Close Button Frame", width=10)
         lbl4.pack(side=LEFT, anchor=N, padx=5, pady=5)
-        buttonClose = Button(frame4, text="Close", width=30)
-        #buttonClose.pack(side=RIGHT, command=close_window)
+        buttonClose = Button(frame4, text="Close", width=30, command=close_window)
         buttonClose.pack(side=RIGHT)
 
 def main():
