@@ -19,15 +19,15 @@ def BrowseFolder():
     # check if user cancelled prompt - this doesn't actually work (always returns folderPath <> None)
     if not folderPath is None:
         folderPath.set(directory)
-        getfilelist(directory)
+        getoldfilelist(directory)
     else:
         folderPath.set("nothing selected")
 
 
 # function for getting all files within a directories and its subs
-def getfilelist(directory):
+def getoldfilelist(directory):
     subdirlist.clear()
-    filelist.clear()
+    oldfilelist.clear()
     filepathlist.clear()
     for subdir, dirs, files in os.walk(directory):
         for file in files:
@@ -38,15 +38,33 @@ def getfilelist(directory):
             # add subdir + ending slash to global subdir variable
             subdirlist.append(subdir + os.sep)
             # add file to global list variable
-            filelist.append(file)
+            oldfilelist.append(file)
             # add filepath to global list variable
             #  this is returning mixed slashes, annoyingly
             #   while these don't affect function (I think), could do a find & replace for consistency
             filepathlist.append(filepath)
     # get string list of files to display to the user
-    sfilelist.set("\n".join(str(x) for x in filelist))
+    soldfilelist.set("\n".join(str(x) for x in oldfilelist))
     # get string list of filepaths to display to the user
     sfilepathlist.set("\n".join(str(x) for x in filepathlist))
+
+
+# function to rename a list of files
+# will need booleans for insert before, insert after, replace, prefix, suffix
+# will need to access global file name/path lists
+def RenameStuff(insertB, insertA, replace, prefix, suffix):
+    #togglebuttonrelief(app.frame4.buttonStartRenaming)
+    #if insertB:
+        # find and insert text
+    #if insertA:
+        # find and insert text
+    #if replace:
+        # find and replace text
+    #if prefix:
+        # prefix fn with text
+    #if suffix:
+        # suffix fn with text
+    print ("RenameStuff called")
 
 
 # function to check if a string variable is not empty
@@ -56,6 +74,15 @@ def isNotBlank (myString):
         return True
     #myString is None OR myString is empty or blank
     return False
+
+
+# function to toggle the relief state of a passed button
+def togglebuttonrelief(btn):
+
+    if btn.config('relief')[-1] == 'sunken':
+        btn.config(relief="raised")
+    else:
+        btn.config(relief="sunken")
 
 
 # the frame class?
@@ -74,7 +101,7 @@ class Example(Frame):
         # main window
         self.pack(fill=BOTH, expand=True,padx=5,pady=5)
 
-        # first frame
+        # first frame, to prompt user for a directory
         frame1 = Frame(self, borderwidth=10, relief="raised")
         frame1.pack(fill=X)
         # instructions to the left of the frame
@@ -86,7 +113,7 @@ class Example(Frame):
                 command=lambda: BrowseFolder())
         buttonBrowseFolder.pack(side=RIGHT)
 
-        # second frame
+        # second frame, to show selected directory
         frame2 = Frame(self, borderwidth=2, relief="sunken")
         frame2.pack(fill=X)
         label2 = Label(frame2, text="Directory Selected:", width=20)
@@ -95,23 +122,46 @@ class Example(Frame):
         label2a = Label(frame2, textvariable=folderPath)
         label2a.pack(fill=X, padx=5, expand=True)
 
+        # fourth frame to show options for renaming
+        frame4 = Frame(self, borderwidth=2, relief="solid")
+        frame4.pack(fill=X)
+        label4 = Label(frame4, text="Options:", width=20)
+        label4.pack(side=LEFT, padx=5, pady=5)
+        buttonStartRenaming = Button(frame4, text="Rename some shit!", width=20,\
+                command=lambda: RenameStuff(False, False, False, False, True))
+        buttonStartRenaming.pack(side=RIGHT)
+        frame4a = Frame(frame4, borderwidth=2, relief="solid")
+        frame4a.pack(fill=X)
+        # start creating buttons for user to toggle rename functions
+        #buttonPrefix = Button(frame4a, text="Add Prefix", width=20, command=lambda: togglebuttonrelief)
+        #buttonPrefix.pack(side=RIGHT)
+
         # third frame
         frame3 = Frame(self, borderwidth=10, relief="raised")
         frame3.pack(fill=BOTH, expand=True)
         # sub frame on the left to show filenames
-        frame3a = Frame(frame3, borderwidth=2, relief="solid")
-        frame3a.pack(side=LEFT, fill=BOTH, expand=True)
-        label3a1 = Label(frame3a, text="File Name List", width=15, anchor="center", borderwidth=2, relief="solid")
+        frame3a = Frame(frame3, borderwidth=2, relief="sunken")
+        frame3a.pack(anchor=N, side=LEFT, fill=BOTH, expand=True)
+        label3a1 = Label(frame3a, text="Old File Name List", width=20, anchor="center", borderwidth=2, relief="solid")
         label3a1.pack(anchor="center", padx=5, pady=5)
-        label3a2 = Label(frame3a, textvariable=sfilelist)
-        label3a2.pack(anchor="w", padx=2, pady=5)
-        # sub frame on the right to show filenames wth paths
-        frame3b = Frame(frame3, borderwidth=2, relief="solid")
-        frame3b.pack(side=RIGHT, fill=BOTH, expand=True)
-        label3b1 = Label(frame3b, text="File Path List", width=15, anchor="center", borderwidth=2, relief="solid")
+        label3a2 = Label(frame3a, textvariable=soldfilelist)
+        label3a2.pack(padx=2, pady=5)
+        # sub frame on the right to show filenames with paths
+        #  before 3b because for reasons I don't understand it will only put it on the right if it is created first
+        frame3c = Frame(frame3, borderwidth=2, relief="solid")
+        frame3c.pack(anchor=N, side=RIGHT, fill=BOTH, expand=True)
+        label3c1 = Label(frame3c, text="File Path List", width=15, anchor="center", borderwidth=2, relief="solid")
+        label3c1.pack(anchor="center", padx=5, pady=5)
+        label3c2 = Label(frame3c, textvariable=sfilepathlist)
+        label3c2.pack(padx=2, pady=5)
+        # sub frame in the middle to show new filenames
+        #  after 3c because for reasons I don't understand it will only put it in the middle if it is created after
+        frame3b = Frame(frame3, borderwidth=2, relief="raised")
+        frame3b.pack(anchor=N, side=RIGHT, fill=BOTH, expand=True)
+        label3b1 = Label(frame3b, text="New File Name List", width=20, anchor="center", borderwidth=2, relief="solid")
         label3b1.pack(anchor="center", padx=5, pady=5)
-        label3b2 = Label(frame3b, textvariable=sfilepathlist)
-        label3b2.pack(anchor="w", padx=2, pady=5)
+        label3b2 = Label(frame3b, textvariable=snewfilelist)
+        label3b2.pack(padx=2, pady=5)
 
 
 def main():
@@ -129,13 +179,21 @@ def main():
     # initialize as list type
     subdirlist = []
     # global variable to hold list of files found
-    global filelist
+    global oldfilelist
     # initialize as list type
-    filelist = []
+    oldfilelist = []
     # global variable to hold string list of files found
-    global sfilelist
+    global soldfilelist
     # this apparently needs to be here so that labels can access the data
-    sfilelist = tk.StringVar()
+    soldfilelist = tk.StringVar()
+    # global variable to hold list of files found
+    global newfilelist
+    # initialize as list type
+    newfilelist = []
+    # global variable to hold string list of files found
+    global snewfilelist
+    # this apparently needs to be here so that labels can access the data
+    snewfilelist = tk.StringVar()
     # global variable to hold list of filepaths found
     global filepathlist
     # initialize as list type
