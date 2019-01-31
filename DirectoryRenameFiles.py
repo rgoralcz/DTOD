@@ -78,11 +78,44 @@ def isNotBlank (myString):
 
 # function to toggle the relief state of a passed button
 def togglebuttonrelief(btn):
-
     if btn.config('relief')[-1] == 'sunken':
         btn.config(relief="raised")
     else:
         btn.config(relief="sunken")
+
+# function to toggle bAddPrefix global boolean and button display state
+def togglebAddPrefix(btn):
+    global bAddPrefix
+    #print("------------")
+    #print (str(type(bAddPrefix)) + " - bAddPrefix was: " + str(bAddPrefix))
+    togglebuttonrelief(btn)
+    bAddPrefix = not bAddPrefix
+    #if not bAddPrefix:
+        #print("bAddPrefix was Not")
+        #bAddPrefix = True
+    #elif bAddPrefix:
+        #print("bAddPrefix was")
+        #bAddPrefix = False
+    #print (str(type(bAddPrefix)) + " - bAddPrefix is now: " + str(bAddPrefix))
+    #print("===========")
+
+# function to toggle bAddPrefix global boolean and button display state
+def togglebAddSuffix(btn):
+    global bAddSuffix
+    togglebuttonrelief(btn)
+    bAddSuffix = not bAddSuffix
+
+# function to toggle bAddPrefix global boolean and button display state
+def togglebInsertB(btn):
+    global bInsertB
+    togglebuttonrelief(btn)
+    bInsertB = not bInsertB
+
+# function to toggle bAddPrefix global boolean and button display state
+def togglebInsertA(btn):
+    global bInsertA
+    togglebuttonrelief(btn)
+    bInsertA = not bInsertA
 
 
 # the frame class?
@@ -123,18 +156,26 @@ class Example(Frame):
         label2a.pack(fill=X, padx=5, expand=True)
 
         # fourth frame to show options for renaming
-        frame4 = Frame(self, borderwidth=2, relief="solid")
+        frame4 = Frame(self, borderwidth=5, relief="solid")
         frame4.pack(fill=X)
-        label4 = Label(frame4, text="Options:", width=20)
-        label4.pack(side=LEFT, padx=5, pady=5)
-        buttonStartRenaming = Button(frame4, text="Rename some shit!", width=20,\
-                command=lambda: RenameStuff(False, False, False, False, True))
-        buttonStartRenaming.pack(side=RIGHT)
         frame4a = Frame(frame4, borderwidth=2, relief="solid")
         frame4a.pack(fill=X)
+        label4a = Label(frame4a, text="Options:", width=20)
+        label4a.pack(side=LEFT, padx=5, pady=5)
+        buttonStartRenaming = Button(frame4a, text="Rename some shit!", width=20,\
+                command=lambda: RenameStuff(False, False, False, False, True))
+        buttonStartRenaming.pack(side=RIGHT)
+        frame4b = Frame(frame4, borderwidth=2, relief="solid")
+        frame4b.pack(fill=X)
         # start creating buttons for user to toggle rename functions
-        #buttonPrefix = Button(frame4a, text="Add Prefix", width=20, command=lambda: togglebuttonrelief)
-        #buttonPrefix.pack(side=RIGHT)
+        buttonPrefix = tk.Button(frame4b, text="Add Prefix", width=12, relief="raised", command=lambda: togglebAddPrefix(buttonPrefix))
+        buttonPrefix.pack(side=LEFT, padx=5)
+        buttonSuffix = tk.Button(frame4b, text="Add Suffix", width=12, relief="raised", command=lambda: togglebuttonrelief(buttonSuffix))
+        buttonSuffix.pack(side=LEFT, padx=5)
+        buttonInsertB = tk.Button(frame4b, text="Insert Before", width=12, relief="raised", command=lambda: togglebInsertB(buttonInsertB))
+        buttonInsertB.pack(side=LEFT, padx=5)
+        buttonInsertA = tk.Button(frame4b, text="Insert After", width=12, relief="raised", command=lambda: togglebInsertB(buttonInsertA))
+        buttonInsertA.pack(side=LEFT, padx=5)
 
         # third frame
         frame3 = Frame(self, borderwidth=10, relief="raised")
@@ -169,7 +210,7 @@ def main():
     # main window
     root = Tk()
     # set size of window
-    root.geometry("600x400+300+200")
+    root.geometry("800x400+300+200")
     # declare global variable to make the data available
     global folderPath
     # this apparently needs to be here so that labels can access the data
@@ -202,6 +243,15 @@ def main():
     global sfilepathlist
     # this apparently needs to be here so that labels can access the data
     sfilepathlist = tk.StringVar()
+    # global variable to hold selected state of Add Prefix button
+    global bAddPrefix
+    bAddPrefix = False
+    global bAddSuffix
+    bAddSuffix = False
+    global bInsertB
+    bInsertB = False
+    global bInsertA
+    bInsertA = False
     # create frame in root
     app = Example()
     # a button to close root
