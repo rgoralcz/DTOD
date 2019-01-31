@@ -96,22 +96,22 @@ class Example(Frame):
         label2a.pack(fill=X, padx=5, expand=True)
 
         # third frame
-        frame3 = Frame(self, borderwidth=10, relief="solid")
+        frame3 = Frame(self, borderwidth=10, relief="raised")
         frame3.pack(fill=BOTH, expand=True)
         # sub frame on the left to show filenames
         frame3a = Frame(frame3, borderwidth=2, relief="solid")
         frame3a.pack(side=LEFT, fill=BOTH, expand=True)
-        label3a1 = Label(frame3a, text="File Name List", width=10)
-        label3a1.pack(anchor=N, padx=5, pady=5)
-        label3a2 = Label(frame3a, width=20, textvariable=sfilelist)
-        label3a2.pack(fill=BOTH, padx=5, pady=2)
+        label3a1 = Label(frame3a, text="File Name List", width=15, anchor="center", borderwidth=2, relief="solid")
+        label3a1.pack(anchor="center", padx=5, pady=5)
+        label3a2 = Label(frame3a, textvariable=sfilelist)
+        label3a2.pack(anchor="w", padx=2, pady=5)
         # sub frame on the right to show filenames wth paths
         frame3b = Frame(frame3, borderwidth=2, relief="solid")
         frame3b.pack(side=RIGHT, fill=BOTH, expand=True)
-        label3b1 = Label(frame3b, text="File Path List", width=10)
-        label3b1.pack(side=TOP, anchor=N, padx=5, pady=5)
-        label3b2 = Label(frame3b, width=20, textvariable=sfilepathlist)
-        label3b2.pack(fill=BOTH, padx=5, pady=2)
+        label3b1 = Label(frame3b, text="File Path List", width=15, anchor="center", borderwidth=2, relief="solid")
+        label3b1.pack(anchor="center", padx=5, pady=5)
+        label3b2 = Label(frame3b, textvariable=sfilepathlist)
+        label3b2.pack(anchor="w", padx=2, pady=5)
 
 
 def main():
