@@ -8,6 +8,11 @@ from tkinter import filedialog
 import os
 
 
+# function to destroy a frame passed to it
+def close_window(tempobj):
+    tempobj.destroy()
+
+
 # function for browsing to a directory
 def BrowseFolder():
     # prompt user
@@ -28,6 +33,7 @@ def getoldfilelist(directory):
     oldfilepathlist.clear()
     newfilelist.clear()
     newfilepathlist.clear()
+    resavefile.clear()
     for subdir, dirs, files in os.walk(directory):
         for file in files:
             filepath = subdir + os.sep + file
@@ -46,6 +52,8 @@ def getoldfilelist(directory):
             oldfilepathlist.append(filepath)
             newfilepathlist.append("")
             tempfilepathlist.append("")
+            # add new list entry for resavefile
+            resavefile.append(False)
     # get string list of files to display to the user
     soldfilelist.set("\n".join(str(x) for x in oldfilelist))
     # get string list of filepaths to display to the user
@@ -55,29 +63,56 @@ def getoldfilelist(directory):
 # function to rename a list of files
 # will need booleans for insert before, insert after, replace, prefix, suffix
 # will need to access global file name/path lists
-def RenameStuff(sPrefix, sSuffix, sInsertB, sInsertA, sReplace, texttofind):
+def RenameStuff():
     global getoldfilelist
     # get directory again in case user is running renameStuff again without re-browsing to folders
     global directory
     getoldfilelist(directory)
+    #debug message
+    print ("RenameStuff called\n")
+    global bPrefix
+    global bSuffix
+    global bInsertB
+    global bInsertA
+    global bReplace
+    global texttofind
+    global Prefix
 
     global tempfilepathlist
     global oldfilelist
     global oldfilepathlist
     global subdirlist
     global resavefile
+    # testing hardcoded value
+    texttofind = "frame"
+    # testing suffix
+    sSuffix = "_TESTSUFFIX"
+    # testing prefix
+    sPrefix = "TESTPREFIX_"
+    # testing insert
+    sInsertA = "-InsertedAfter-"
+    # testing insert
+    sInsertB = "-InsertedBefore-"
+    # testing replace
+    sReplace = "-ReplacedText-"
+    # initialize tempfilename as string
     tempfilename = ""
 
     # if user selected to insert or replace text, need to find the provided string
     bFind = False
+    print ("bFind: " + str(bFind))
     if bInsertB or bInsertA or bReplace:
         bFind = True
+    print ("bFind: " + str(bFind))
     # loop through all items in the file list
     for item in oldfilelist:
+        print ()
         # get index position of item in oldfilelist to crossreference with other file lists
         indexposn = oldfilelist.index(item)
         basefilename = os.path.splitext(item)[0]
         basefileext = os.path.splitext(item)[1]
+        #debug message
+        print ("On item number " + str(indexposn) + " which is " + basefilename)
         # if required to find text for replacement or insertion, do so
         tempfilename = basefilename
         tempfilepathlist[indexposn] = subdirlist[indexposn] + tempfilename + basefileext
@@ -85,59 +120,113 @@ def RenameStuff(sPrefix, sSuffix, sInsertB, sInsertA, sReplace, texttofind):
             textposn = item.find(texttofind)
             # if the provided text was found, do replacement or insertion as necessary
             if textposn > -1:
+                #debug messages
+                #print ("Found : " + texttofind + " in " + basefilename + " at position " + str(textposn))
+                #print (oldfilepathlist[int(indexposn)])
+                #print (subdirlist[int(indexposn)])
+                #set boolean for whether or not to resave the file
+                resavefile[indexposn] = True
                 # if user chose to insert after text, do so
                 if bInsertA:
                     textposn = tempfilename.find(texttofind)
+                    #debug messages
+                    #print ("inserting text after " + texttofind + " in " + basefilename)
                     textleft = tempfilename[0:textposn+len(texttofind)]
                     textposnend = textposn + len(texttofind)
                     textright = tempfilename[textposnend:len(tempfilename)]
+                    #print ("textleft: " + textleft + " || adding: " + sInsertA + " || textright: " + textright)
                     tempfilename = textleft + sInsertA + textright
+                    #print (basefilename + " is now " + tempfilename)
                     newfilelist[indexposn] = tempfilename
+                    #print ("newfilelist[indexposn]: " + str(newfilelist[indexposn]))
                     newfilepathlist[indexposn] = subdirlist[indexposn] + tempfilename + basefileext
+                    #print ("newfilepathlist[indexposn]: " + str(newfilepathlist[indexposn]))
                     saveFile(indexposn)
+                    #os.rename(oldfilepathlist[indexposn], newfilepathlist[indexposn])
                     tempfilepathlist[indexposn] = subdirlist[indexposn] + tempfilename + basefileext
 
                 # if user chose to insert before text, do so
                 if bInsertB:
                     textposn = tempfilename.find(texttofind)
+                    #debug messages
+                    #print ("inserting text before " + texttofind + " in " + basefilename)
                     textleft = tempfilename[0:textposn]
                     textposnend = textposn
                     textright = tempfilename[textposnend:len(tempfilename)]
+                    #print ("textleft: " + textleft + " || adding: " + sInsertB + " || textright: " + textright)
                     tempfilename = textleft + sInsertB + textright
+                    #print (basefilename + " is now " + tempfilename)
                     newfilelist[indexposn] = tempfilename
+                    #print ("newfilelist[indexposn]: " + str(newfilelist[indexposn]))
                     newfilepathlist[indexposn] = subdirlist[indexposn] + tempfilename + basefileext
+                    #print ("newfilepathlist[indexposn]: " + str(newfilepathlist[indexposn]))
                     saveFile(indexposn)
+                    #os.rename(oldfilepathlist[indexposn], newfilepathlist[indexposn])
                     tempfilepathlist[indexposn] = subdirlist[indexposn] + tempfilename + basefileext
 
                 # if user chose to replace text, do so
                 if bReplace:
                     textposn = tempfilename.find(texttofind)
+                    #debug messages
+                    #print ("replacing text " + texttofind + " in " + basefilename)
                     textleft = tempfilename[0:textposn]
                     textposnend = textposn + len(texttofind)
                     textright = tempfilename[textposnend:len(tempfilename)]
+                    #print ("textleft: " + textleft + " || adding: " + sReplace + " || textright: " + textright)
                     tempfilename = textleft + sReplace + textright
+                    #print (basefilename + " is now " + tempfilename)
                     newfilelist[indexposn] = tempfilename
+                    #print ("newfilelist[indexposn]: " + str(newfilelist[indexposn]))
                     newfilepathlist[indexposn] = subdirlist[indexposn] + tempfilename + basefileext
+                    #print ("newfilepathlist[indexposn]: " + str(newfilepathlist[indexposn]))
                     saveFile(indexposn)
+                    #os.rename(oldfilepathlist[indexposn], newfilepathlist[indexposn])
                     tempfilepathlist[indexposn] = subdirlist[indexposn] + tempfilename + basefileext
 
         # if user chose to add suffix, do so
         if bSuffix:
+            # mark file posn to be resaved
+            resavefile[indexposn] = True
+            #debug messages
+            #print (oldfilepathlist[indexposn])
+            #print ("adding suffix to " + basefilename)
             tempfilename = tempfilename + sSuffix
+            #print (basefilename + " is now " + tempfilename)
             newfilelist[indexposn] = tempfilename
+            #print ("newfilelist[indexposn]: " + str(newfilelist[indexposn]))
             newfilepathlist[indexposn] = subdirlist[indexposn] + tempfilename + basefileext
+            #print ("newfilepathlist[indexposn]: " + str(newfilepathlist[indexposn]))
             saveFile(indexposn)
+            #os.rename(oldfilepathlist[indexposn], newfilepathlist[indexposn])
             tempfilepathlist[indexposn] = subdirlist[indexposn] + tempfilename + basefileext
 
         # if user chose to add prefix, do so
         if bPrefix:
+            # mark file posn to be resaved
+            resavefile[indexposn] = True
+            #debug messages
+            #print ("adding prefix to " + basefilename)
             tempfilename = sPrefix + tempfilename
             newfilelist[indexposn] = tempfilename
+            #print ("newfilelist[indexposn]: " + str(newfilelist[indexposn]))
             newfilepathlist[indexposn] = subdirlist[indexposn] + tempfilename + basefileext
+            #print ("newfilepathlist[indexposn]: " + str(newfilepathlist[indexposn]))
             saveFile(indexposn)
+            #os.rename(oldfilepathlist[indexposn], newfilepathlist[indexposn])
             tempfilepathlist[indexposn] = subdirlist[indexposn] + tempfilename + basefileext
 
+        #debug message
+        #print ("resavefile is " + str(resavefile[indexposn]) + " for " + str(item))
+        # finally, save file with new filename
+        #if resavefile[indexposn]:
+            #os.rename(src, dst)
+
         snewfilelist.set("\n".join(str(x) for x in newfilelist))
+        # update string list of filepaths that is displayed to the user
+        #soldfilepathlist.set("\n".join(str(x) for x in newfilepathlist))
+
+    print()
+    print("done renaming stuff")
 
 
 def saveFile(i):
@@ -167,30 +256,35 @@ def togglebPrefix(btn):
     global bPrefix
     togglebuttonrelief(btn)
     bPrefix = not bPrefix
+    #print (str(type(bPrefix)) + " - bPrefix is now: " + str(bPrefix))
 
 # function to toggle bSuffix global boolean and button display state
 def togglebSuffix(btn):
     global bSuffix
     togglebuttonrelief(btn)
     bSuffix = not bSuffix
+    #print (str(type(bSuffix)) + " - bSuffix is now: " + str(bSuffix))
 
 # function to toggle bInsertB global boolean and button display state
 def togglebInsertB(btn):
     global bInsertB
     togglebuttonrelief(btn)
     bInsertB = not bInsertB
+    #print (str(type(bInsertB)) + " - bInsertB is now: " + str(bInsertB))
 
 # function to toggle bInsertA global boolean and button display state
 def togglebInsertA(btn):
     global bInsertA
     togglebuttonrelief(btn)
     bInsertA = not bInsertA
+    #print (str(type(bInsertA)) + " - bInsertA is now: " + str(bInsertA))
 
 # function to toggle bReplace global boolean and button display state
 def togglebReplace(btn):
     global bReplace
     togglebuttonrelief(btn)
     bReplace = not bReplace
+    #print (str(type(bReplace)) + " - bReplace is now: " + str(bReplace))
 
 
 # the frame class?
@@ -204,15 +298,6 @@ class Example(Frame):
 
 
     def initUI(self):
-
-        def runRenameStuff():
-            prefix = entryPrefix.get()
-            suffix = entrySuffix.get()
-            insertB = entryInsertB.get()
-            insertA = entryInsertA.get()
-            replace = entryReplace.get()
-            findtext = entryFindText.get()
-            RenameStuff(prefix, suffix, insertB, insertA, replace, findtext)
 
         self.master.title("Directory Info")
         # main window
@@ -247,7 +332,7 @@ class Example(Frame):
         label4a = Label(frame4a, text="Options:", width=20)
         label4a.pack(side=LEFT, padx=5, pady=5)
         buttonStartRenaming = Button(frame4a, text="Rename some shit!", width=20,\
-                command=lambda: runRenameStuff())
+                command=lambda: RenameStuff())
         buttonStartRenaming.pack(side=RIGHT)
         frame4b = Frame(frame4, borderwidth=2, relief="solid")
         frame4b.pack(fill=X)
@@ -259,9 +344,7 @@ class Example(Frame):
         frame4e.pack(fill=X)
         frame4f = Frame(frame4, borderwidth=2, relief="solid")
         frame4f.pack(fill=X)
-        frame4g = Frame(frame4, borderwidth=2, relief="solid")
-        frame4g.pack(fill=X)
-        # create buttons for user to toggle rename functions
+        # start creating buttons for user to toggle rename functions
         buttonPrefix = tk.Button(frame4b, text="Add Prefix", width=12, relief="raised", command=lambda: togglebPrefix(buttonPrefix))
         buttonPrefix.pack(side=LEFT, padx=5)
         buttonSuffix = tk.Button(frame4c, text="Add Suffix", width=12, relief="raised", command=lambda: togglebSuffix(buttonSuffix))
@@ -272,22 +355,6 @@ class Example(Frame):
         buttonInsertA.pack(side=LEFT, padx=5)
         buttonReplace = tk.Button(frame4f, text="Replace", width=12, relief="raised", command=lambda: togglebReplace(buttonReplace))
         buttonReplace.pack(side=LEFT, padx=5)
-        # create label for text to find
-        labelFind = Label(frame4g, text="Text to find (for Insert Before, Insert After, and Replace):")
-        labelFind.pack(side=LEFT,padx=5)
-        # create entry boxes for user to provide text strings
-        entryPrefix = Entry(frame4b)
-        entryPrefix.pack(padx=5)
-        entrySuffix = Entry(frame4c)
-        entrySuffix.pack(padx=5)
-        entryInsertB = Entry(frame4d)
-        entryInsertB.pack(padx=5)
-        entryInsertA = Entry(frame4e)
-        entryInsertA.pack(padx=5)
-        entryReplace = Entry(frame4f)
-        entryReplace.pack(padx=5)
-        entryFindText = Entry(frame4g)
-        entryFindText.pack(padx=5)
 
         # third frame
         frame3 = Frame(self, borderwidth=10, relief="raised")
@@ -370,7 +437,8 @@ def main():
     # global variable to hold temporary list of file paths as files are renamed
     global tempfilepathlist
     tempfilepathlist = []
-    # global variables to hold selected state of Add Prefix button
+
+    # global variable to hold selected state of Add Prefix button
     global bPrefix
     bPrefix = False
     global bSuffix
@@ -381,6 +449,12 @@ def main():
     bInsertA = False
     global bReplace
     bReplace = False
+
+    # global variable to hold booleans for whether or not to resave a file
+    global resavefile
+    # initialize as list type
+    resavefile = []
+
 
     # create frame in root
     app = Example()
