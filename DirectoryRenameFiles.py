@@ -96,7 +96,7 @@ def togglebAddPrefix(btn):
     #elif bAddPrefix:
         #print("bAddPrefix was")
         #bAddPrefix = False
-    #print (str(type(bAddPrefix)) + " - bAddPrefix is now: " + str(bAddPrefix))
+    print (str(type(bAddPrefix)) + " - bAddPrefix is now: " + str(bAddPrefix))
     #print("===========")
 
 # function to toggle bAddPrefix global boolean and button display state
@@ -104,18 +104,21 @@ def togglebAddSuffix(btn):
     global bAddSuffix
     togglebuttonrelief(btn)
     bAddSuffix = not bAddSuffix
+    print (str(type(bAddSuffix)) + " - bAddSuffix is now: " + str(bAddSuffix))
 
 # function to toggle bAddPrefix global boolean and button display state
 def togglebInsertB(btn):
     global bInsertB
     togglebuttonrelief(btn)
     bInsertB = not bInsertB
+    print (str(type(bInsertB)) + " - bInsertB is now: " + str(bInsertB))
 
 # function to toggle bAddPrefix global boolean and button display state
 def togglebInsertA(btn):
     global bInsertA
     togglebuttonrelief(btn)
     bInsertA = not bInsertA
+    print (str(type(bInsertA)) + " - bInsertA is now: " + str(bInsertA))
 
 
 # the frame class?
@@ -156,7 +159,7 @@ class Example(Frame):
         label2a.pack(fill=X, padx=5, expand=True)
 
         # fourth frame to show options for renaming
-        frame4 = Frame(self, borderwidth=5, relief="solid")
+        frame4 = Frame(self, borderwidth=50, relief="groove")
         frame4.pack(fill=X)
         frame4a = Frame(frame4, borderwidth=2, relief="solid")
         frame4a.pack(fill=X)
@@ -170,11 +173,11 @@ class Example(Frame):
         # start creating buttons for user to toggle rename functions
         buttonPrefix = tk.Button(frame4b, text="Add Prefix", width=12, relief="raised", command=lambda: togglebAddPrefix(buttonPrefix))
         buttonPrefix.pack(side=LEFT, padx=5)
-        buttonSuffix = tk.Button(frame4b, text="Add Suffix", width=12, relief="raised", command=lambda: togglebuttonrelief(buttonSuffix))
+        buttonSuffix = tk.Button(frame4b, text="Add Suffix", width=12, relief="raised", command=lambda: togglebAddSuffix(buttonSuffix))
         buttonSuffix.pack(side=LEFT, padx=5)
         buttonInsertB = tk.Button(frame4b, text="Insert Before", width=12, relief="raised", command=lambda: togglebInsertB(buttonInsertB))
         buttonInsertB.pack(side=LEFT, padx=5)
-        buttonInsertA = tk.Button(frame4b, text="Insert After", width=12, relief="raised", command=lambda: togglebInsertB(buttonInsertA))
+        buttonInsertA = tk.Button(frame4b, text="Insert After", width=12, relief="raised", command=lambda: togglebInsertA(buttonInsertA))
         buttonInsertA.pack(side=LEFT, padx=5)
 
         # third frame
