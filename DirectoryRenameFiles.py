@@ -12,6 +12,7 @@ import os
 def close_window(tempobj):
     tempobj.destroy()
 
+
 # function for browsing to a directory
 def BrowseFolder():
     # prompt user
@@ -28,7 +29,7 @@ def BrowseFolder():
 def getoldfilelist(directory):
     subdirlist.clear()
     oldfilelist.clear()
-    filepathlist.clear()
+    oldfilepathlist.clear()
     for subdir, dirs, files in os.walk(directory):
         for file in files:
             filepath = subdir + os.sep + file
@@ -42,30 +43,98 @@ def getoldfilelist(directory):
             # add filepath to global list variable
             #  this is returning mixed slashes, annoyingly
             #   while these don't affect function (I think), could do a find & replace for consistency
-            filepathlist.append(filepath)
+            oldfilepathlist.append(filepath)
+            # add new list entry for resavefile
+            resavefile.append(False)
     # get string list of files to display to the user
     soldfilelist.set("\n".join(str(x) for x in oldfilelist))
     # get string list of filepaths to display to the user
-    sfilepathlist.set("\n".join(str(x) for x in filepathlist))
+    soldfilepathlist.set("\n".join(str(x) for x in oldfilepathlist))
 
 
 # function to rename a list of files
 # will need booleans for insert before, insert after, replace, prefix, suffix
 # will need to access global file name/path lists
-def RenameStuff(insertB, insertA, replace, prefix, suffix):
-    #togglebuttonrelief(app.frame4.buttonStartRenaming)
-    #if insertB:
-        # find and insert text
-    #if insertA:
-        # find and insert text
-    #if replace:
-        # find and replace text
-    #if prefix:
-        # prefix fn with text
-    #if suffix:
-        # suffix fn with text
+def RenameStuff():
+    #debug message
     print ("RenameStuff called")
+    global bPrefix
+    global bSuffix
+    global bInsertB
+    global bInsertA
+    global bReplace
+    global texttofind
+    global Prefix
 
+    global oldfilelist
+    global oldfilepathlist
+    global subdirlist
+    global resavefile
+    # testing hardcoded value
+    texttofind = "box"
+    # initialize tempfilename as string
+    tempfilename = ""
+
+    # if user selected to insert or replace text, need to find the provided string
+    bFind = False
+    if bInsertB or bInsertA or bReplace:
+        bFind = True
+
+    # if user selected to add prefix or suffix to files, set all resavefile booleans to true
+    if bPrefix or bSuffix:
+        for i in resavefile:
+            resavefile[i] = True
+
+    # loop through all items in the file list
+    for item in oldfilelist:
+        # get index position of item in oldfilelist to crossreference with other file lists
+        indexposn = oldfilelist.index(item)
+        #debug message
+        print ("On item number " + str(indexposn))
+        # if required to find text for replacement or insertion, do so
+        if bFind:
+            textposn = item.find(texttofind)
+            # if the provided text was found, do replacement or insertion as necessary
+            if textposn > 0:
+                #debug messages
+                print ("Found : " + texttofind + " in " + str(item) + " at position " + str(textposn))
+                #print (oldfilepathlist[int(indexposn)])
+                #print (subdirlist[int(indexposn)])
+
+                #set boolean for whether or not to resave the file
+                resavefile[indexposn] = True
+                # if user chose to insert after text, do so
+                if bInsertA:
+                    #debug messages
+                    print ("inserting text after " + texttofind + " in " + str(item))
+
+                # if user chose to insert before text, do so
+                if bInsertB:
+                    #debug messages
+                    print ("inserting text before " + texttofind + " in " + str(item))
+
+                # if user chose to replace text, do so
+                if bReplace:
+                    #debug messages
+                    print ("replacing text " + texttofind + " in " + str(item))
+
+        # if user chose to add suffix, do so
+        if bSuffix:
+            #debug messages
+            print ("adding suffix to " + str(item))
+
+        # if user chose to add prefix, do so
+        if bPrefix:
+            #debug messages
+            print ("adding prefix to " + str(item))
+
+        #debug message
+        print ("resavefile is " + str(resavefile[indexposn]) + " for " + str(item))
+        # finally, save file with new filename
+        #if resavefile[indexposn]:
+            #os.rename(src, dst)
+
+        print()
 
 # function to check if a string variable is not empty
 def isNotBlank (myString):
@@ -83,42 +152,41 @@ def togglebuttonrelief(btn):
     else:
         btn.config(relief="sunken")
 
-# function to toggle bAddPrefix global boolean and button display state
-def togglebAddPrefix(btn):
-    global bAddPrefix
-    #print("------------")
-    #print (str(type(bAddPrefix)) + " - bAddPrefix was: " + str(bAddPrefix))
-    togglebuttonrelief(btn)
-    bAddPrefix = not bAddPrefix
-    #if not bAddPrefix:
-        #print("bAddPrefix was Not")
-        #bAddPrefix = True
-    #elif bAddPrefix:
-        #print("bAddPrefix was")
-        #bAddPrefix = False
-    print (str(type(bAddPrefix)) + " - bAddPrefix is now: " + str(bAddPrefix))
-    #print("===========")
 
-# function to toggle bAddPrefix global boolean and button display state
-def togglebAddSuffix(btn):
-    global bAddSuffix
+# function to toggle bPrefix global boolean and button display state
+def togglebPrefix(btn):
+    global bPrefix
     togglebuttonrelief(btn)
-    bAddSuffix = not bAddSuffix
-    print (str(type(bAddSuffix)) + " - bAddSuffix is now: " + str(bAddSuffix))
+    bPrefix = not bPrefix
+    #print (str(type(bPrefix)) + " - bPrefix is now: " + str(bPrefix))
 
-# function to toggle bAddPrefix global boolean and button display state
+# function to toggle bSuffix global boolean and button display state
+def togglebSuffix(btn):
+    global bSuffix
+    togglebuttonrelief(btn)
+    bSuffix = not bSuffix
+    #print (str(type(bSuffix)) + " - bSuffix is now: " + str(bSuffix))
+
+# function to toggle bInsertB global boolean and button display state
 def togglebInsertB(btn):
     global bInsertB
     togglebuttonrelief(btn)
     bInsertB = not bInsertB
-    print (str(type(bInsertB)) + " - bInsertB is now: " + str(bInsertB))
+    #print (str(type(bInsertB)) + " - bInsertB is now: " + str(bInsertB))
 
-# function to toggle bAddPrefix global boolean and button display state
+# function to toggle bInsertA global boolean and button display state
 def togglebInsertA(btn):
     global bInsertA
     togglebuttonrelief(btn)
     bInsertA = not bInsertA
-    print (str(type(bInsertA)) + " - bInsertA is now: " + str(bInsertA))
+    #print (str(type(bInsertA)) + " - bInsertA is now: " + str(bInsertA))
+
+# function to toggle bReplace global boolean and button display state
+def togglebReplace(btn):
+    global bReplace
+    togglebuttonrelief(btn)
+    bReplace = not bReplace
+    #print (str(type(bReplace)) + " - bReplace is now: " + str(bReplace))
 
 
 # the frame class?
@@ -166,19 +234,21 @@ class Example(Frame):
         label4a = Label(frame4a, text="Options:", width=20)
         label4a.pack(side=LEFT, padx=5, pady=5)
         buttonStartRenaming = Button(frame4a, text="Rename some shit!", width=20,\
-                command=lambda: RenameStuff(False, False, False, False, True))
+                command=lambda: RenameStuff())
         buttonStartRenaming.pack(side=RIGHT)
         frame4b = Frame(frame4, borderwidth=2, relief="solid")
         frame4b.pack(fill=X)
         # start creating buttons for user to toggle rename functions
-        buttonPrefix = tk.Button(frame4b, text="Add Prefix", width=12, relief="raised", command=lambda: togglebAddPrefix(buttonPrefix))
+        buttonPrefix = tk.Button(frame4b, text="Add Prefix", width=12, relief="raised", command=lambda: togglebPrefix(buttonPrefix))
         buttonPrefix.pack(side=LEFT, padx=5)
-        buttonSuffix = tk.Button(frame4b, text="Add Suffix", width=12, relief="raised", command=lambda: togglebAddSuffix(buttonSuffix))
+        buttonSuffix = tk.Button(frame4b, text="Add Suffix", width=12, relief="raised", command=lambda: togglebSuffix(buttonSuffix))
         buttonSuffix.pack(side=LEFT, padx=5)
         buttonInsertB = tk.Button(frame4b, text="Insert Before", width=12, relief="raised", command=lambda: togglebInsertB(buttonInsertB))
         buttonInsertB.pack(side=LEFT, padx=5)
         buttonInsertA = tk.Button(frame4b, text="Insert After", width=12, relief="raised", command=lambda: togglebInsertA(buttonInsertA))
         buttonInsertA.pack(side=LEFT, padx=5)
+        buttonReplace = tk.Button(frame4b, text="Replace", width=12, relief="raised", command=lambda: togglebReplace(buttonReplace))
+        buttonReplace.pack(side=LEFT, padx=5)
 
         # third frame
         frame3 = Frame(self, borderwidth=10, relief="raised")
@@ -196,7 +266,7 @@ class Example(Frame):
         frame3c.pack(anchor=N, side=RIGHT, fill=BOTH, expand=True)
         label3c1 = Label(frame3c, text="File Path List", width=15, anchor="center", borderwidth=2, relief="solid")
         label3c1.pack(anchor="center", padx=5, pady=5)
-        label3c2 = Label(frame3c, textvariable=sfilepathlist)
+        label3c2 = Label(frame3c, textvariable=soldfilepathlist)
         label3c2.pack(padx=2, pady=5)
         # sub frame in the middle to show new filenames
         #  after 3c because for reasons I don't understand it will only put it in the middle if it is created after
@@ -214,6 +284,9 @@ def main():
     root = Tk()
     # set size of window
     root.geometry("800x400+300+200")
+
+    # initialize a bunch of global variables
+
     # declare global variable to make the data available
     global folderPath
     # this apparently needs to be here so that labels can access the data
@@ -239,22 +312,39 @@ def main():
     # this apparently needs to be here so that labels can access the data
     snewfilelist = tk.StringVar()
     # global variable to hold list of filepaths found
-    global filepathlist
+    global oldfilepathlist
     # initialize as list type
-    filepathlist = []
+    oldfilepathlist = []
     # global variable to hold string list of files found
-    global sfilepathlist
+    global soldfilepathlist
     # this apparently needs to be here so that labels can access the data
-    sfilepathlist = tk.StringVar()
+    soldfilepathlist = tk.StringVar()
+    global newfilepathlist
+    # initialize as list type
+    newfilepathlist = []
+    # global variable to hold string list of files found
+    global snewfilepathlist
+    # this apparently needs to be here so that labels can access the data
+    snewfilepathlist = tk.StringVar()
+
     # global variable to hold selected state of Add Prefix button
-    global bAddPrefix
-    bAddPrefix = False
-    global bAddSuffix
-    bAddSuffix = False
+    global bPrefix
+    bPrefix = False
+    global bSuffix
+    bSuffix = False
     global bInsertB
     bInsertB = False
     global bInsertA
     bInsertA = False
+    global bReplace
+    bReplace = False
+
+    # global variable to hold booleans for whether or not to resave a file
+    global resavefile
+    # initialize as list type
+    resavefile = []
+
+
     # create frame in root
     app = Example()
     # a button to close root
