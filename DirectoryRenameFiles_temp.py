@@ -11,6 +11,15 @@ import os
 # the frame class?
 class Example(Frame):
 
+    # 'global' variables to hold selected state of buttons
+    bIncludeSubdirs = False
+    bPrefix = False
+    bSuffix = False
+    bInsertB = False
+    bInsertA = False
+    bReplace = False
+
+
     # some shit that we do because it's the 'right' way to do things
     def __init__(self):
         super().__init__()
@@ -19,6 +28,7 @@ class Example(Frame):
 
 
     def initUI(self):
+
 
         def saveFile(i):
             global oldfilepathlist
@@ -51,7 +61,7 @@ class Example(Frame):
 
             # if user selected to insert or replace text, need to find the provided string
             bFind = False
-            if bInsertB or bInsertA or bReplace:
+            if Example.bInsertB or Example.bInsertA or Example.bReplace:
                 bFind = True
             # loop through all items in the file list
             for item in oldfilelist:
@@ -67,7 +77,7 @@ class Example(Frame):
                     # if the provided text was found, do replacement or insertion as necessary
                     if textposn > -1:
                         # if user chose to insert after text, do so
-                        if bInsertA:
+                        if Example.bInsertA:
                             textposn = tempfilename.find(texttofind)
                             textleft = tempfilename[0:textposn+len(texttofind)]
                             textposnend = textposn + len(texttofind)
@@ -79,7 +89,7 @@ class Example(Frame):
                             tempfilepathlist[indexposn] = subdirlist[indexposn] + tempfilename + basefileext
 
                         # if user chose to insert before text, do so
-                        if bInsertB:
+                        if Example.bInsertB:
                             textposn = tempfilename.find(texttofind)
                             textleft = tempfilename[0:textposn]
                             textposnend = textposn
@@ -91,7 +101,7 @@ class Example(Frame):
                             tempfilepathlist[indexposn] = subdirlist[indexposn] + tempfilename + basefileext
 
                         # if user chose to replace text, do so
-                        if bReplace:
+                        if Example.bReplace:
                             textposn = tempfilename.find(texttofind)
                             textleft = tempfilename[0:textposn]
                             textposnend = textposn + len(texttofind)
@@ -103,7 +113,7 @@ class Example(Frame):
                             tempfilepathlist[indexposn] = subdirlist[indexposn] + tempfilename + basefileext
 
                 # if user chose to add suffix, do so
-                if bSuffix:
+                if Example.bSuffix:
                     tempfilename = tempfilename + sSuffix
                     newfilelist[indexposn] = tempfilename
                     newfilepathlist[indexposn] = subdirlist[indexposn] + tempfilename + basefileext
@@ -111,7 +121,7 @@ class Example(Frame):
                     tempfilepathlist[indexposn] = subdirlist[indexposn] + tempfilename + basefileext
 
                 # if user chose to add prefix, do so
-                if bPrefix:
+                if Example.bPrefix:
                     tempfilename = sPrefix + tempfilename
                     newfilelist[indexposn] = tempfilename
                     newfilepathlist[indexposn] = subdirlist[indexposn] + tempfilename + basefileext
@@ -142,7 +152,7 @@ class Example(Frame):
                     oldfilepathlist.append(filepath)
                     newfilepathlist.append("")
                     tempfilepathlist.append("")
-                if not bIncludeSubdirs:
+                if not Example.bIncludeSubdirs:
                     # if user selected not to include subdirectories,
                     #  break out of loop after going through files
                     break
@@ -179,41 +189,35 @@ class Example(Frame):
 
         # function to toggle bIncludeSubdirs global boolean and button display state
         def togglebIncludeSubdirs(btn):
-            global bIncludeSubdirs
             global userdirectory
             togglebuttonrelief(btn)
-            bIncludeSubdirs = not bIncludeSubdirs
+            Example.bIncludeSubdirs = not Example.bIncludeSubdirs
             getfilelist(userdirectory)
 
         # function to toggle bPrefix global boolean and button display state
         def togglebPrefix(btn):
-            global bPrefix
             togglebuttonrelief(btn)
-            bPrefix = not bPrefix
+            Example.bPrefix = not Example.bPrefix
 
         # function to toggle bSuffix global boolean and button display state
         def togglebSuffix(btn):
-            global bSuffix
             togglebuttonrelief(btn)
-            bSuffix = not bSuffix
+            Example.bSuffix = not Example.bSuffix
 
         # function to toggle bInsertB global boolean and button display state
         def togglebInsertB(btn):
-            global bInsertB
             togglebuttonrelief(btn)
-            bInsertB = not bInsertB
+            Example.bInsertB = not Example.bInsertB
 
         # function to toggle bInsertA global boolean and button display state
         def togglebInsertA(btn):
-            global bInsertA
             togglebuttonrelief(btn)
-            bInsertA = not bInsertA
+            Example.bInsertA = not Example.bInsertA
 
         # function to toggle bReplace global boolean and button display state
         def togglebReplace(btn):
-            global bReplace
             togglebuttonrelief(btn)
-            bReplace = not bReplace
+            Example.bReplace = not Example.bReplace
 
         def runRenameStuff():
             prefix = entryPrefix.get()
@@ -425,19 +429,7 @@ def main():
     # global variable to hold temporary list of file paths as files are renamed
     global tempfilepathlist
     tempfilepathlist = []
-    # global variables to hold selected state of buttons
-    global bIncludeSubdirs
-    bIncludeSubdirs = False
-    global bPrefix
-    bPrefix = False
-    global bSuffix
-    bSuffix = False
-    global bInsertB
-    bInsertB = False
-    global bInsertA
-    bInsertA = False
-    global bReplace
-    bReplace = False
+
 
     # create frame in root
     app = Example()
